@@ -128,11 +128,18 @@ export default function PersonalServicesPortfolioSite() {
           </div>
 
           <div className="relative min-h-[520px] overflow-hidden rounded-[2rem] border border-white/10">
-            <img
-              src="https://images.unsplash.com/photo-1585386959984-a41552231658?q=80&w=1400&auto=format&fit=crop"
-              alt="Colorful product campaign"
-              className="absolute inset-0 h-full w-full object-cover"
-            />
+           <video
+  autoPlay
+  loop
+  muted
+  playsInline
+  className="absolute inset-0 h-full w-full object-cover"
+>
+  <source
+    src="https://res.cloudinary.com/dluw233th/video/upload/v1777175028/0425_3_ki6pqp.mp4"
+    type="video/mp4"
+  />
+</video>
             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.05),rgba(0,0,0,0.4))]" />
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="flex h-16 w-16 items-center justify-center rounded-full border border-white/30 bg-white/10 text-xl text-white backdrop-blur-sm">
