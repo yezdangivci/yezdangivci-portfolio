@@ -105,61 +105,57 @@ export default function PersonalServicesPortfolioSite() {
         `}</style>
 
         {/* HERO */}
-        <section className="mb-32 grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-          <div className="max-w-3xl font-clean">
-            <div className="text-[11px] uppercase tracking-[0.28em] text-neutral-500">
-              Yezdan Givci · Multidisciplinary Creative Director
-            </div>
-            <h1 className="font-editorial mt-8 text-5xl font-light leading-[0.94] tracking-[0.01em] text-[#F5F1E8] sm:text-6xl lg:text-7xl">
-              Story-driven brands,
-              <br />
-              commercially strong content,
-              <br />
-              and digital experiences.
-            </h1>
-            <p className="mt-8 max-w-xl text-lg leading-8 text-neutral-400">
-              Creative direction across film, branded video, writing, design, audio, and digital products. Original worlds through Yang Theory. Client work shaped with clarity, atmosphere, and intent.
-              <br /><span className="text-neutral-500">Bilingual · English & Turkish · Open to AI, localization, and language-based work.</span>
-            </p>
-            <div className="mt-10 flex flex-wrap gap-8 text-sm text-neutral-300">
-              <button onClick={() => document.getElementById('content-work')?.scrollIntoView({ behavior: 'smooth' })} className="border-b border-white/40 pb-1">Selected work</button>
-              <button onClick={() => setActiveContent('contactForm')} className="border-b border-white/10 pb-1 text-neutral-500">Start a project</button>
-            </div>
-          </div>
+     <section className="mb-32 grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+  <div>
+    <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[11px] uppercase tracking-[0.28em] text-neutral-400">
+      Editorial creative direction · Digital experiences · Bilingual AI systems
+    </div>
 
-          <div className="relative min-h-[520px] overflow-hidden rounded-[2rem] border border-white/10 bg-black">
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="auto"
-              className="absolute inset-0 h-full w-full object-cover"
-            >
-              <source
-                src="https://res.cloudinary.com/dluw233th/video/upload/v1777175028/0425_3_ki6pqp.mp4"
-                type="video/mp4"
-              />
-            </video>
+    <h1 className="max-w-4xl font-display text-5xl leading-[0.95] tracking-[-0.04em] text-[#F5F1E8] sm:text-6xl lg:text-7xl">
+      Story-driven digital experiences for brands, products, and emerging systems.
+    </h1>
 
-            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.05),rgba(0,0,0,0.4))]" />
-          </div>
-        </section>
-</video>
-          <div className="relative min-h-[520px] overflow-hidden rounded-[2rem] border border-white/10 bg-black">
-  <video
-    src="/videos/hero-fluid.mp4"
-    autoPlay
-    muted
-    loop
-    playsInline
-    preload="auto"
-    className="absolute inset-0 h-full w-full object-cover"
-  />
+    <p className="mt-8 max-w-2xl text-lg leading-relaxed text-neutral-400">
+      Creative direction, branded content, websites, launch systems, and bilingual AI-assisted workflows for modern brands and platforms.
+    </p>
 
-  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.05),rgba(0,0,0,0.4))]" />
-          </div>
-        </section>
+    <div className="mt-10 flex flex-wrap gap-8 text-sm text-neutral-300">
+      <button
+        onClick={() =>
+          document.getElementById("content-work")?.scrollIntoView({
+            behavior: "smooth",
+          })
+        }
+        className="border-b border-white/40 pb-1"
+      >
+        Selected work
+      </button>
+
+      <button
+        onClick={() => setActiveContent("contactForm")}
+        className="border-b border-white/10 pb-1 text-neutral-500"
+      >
+        Start a project
+      </button>
+    </div>
+  </div>
+
+  <div className="relative min-h-[520px] overflow-hidden rounded-[2rem] border border-white/10 bg-black">
+    <video
+      src="/videos/hero-fluid.mp4"
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload="auto"
+      className="absolute inset-0 h-full w-full object-cover"
+    />
+
+    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.05),rgba(0,0,0,0.4))]" />
+  </div>
+</section>
+
+{/* SERVICES */}
 
         {/* SERVICES */}
         <section className="mb-32 font-clean">
