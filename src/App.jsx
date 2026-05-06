@@ -140,12 +140,18 @@ export default function PersonalServicesPortfolioSite() {
     type="video/mp4"
   />
 </video>
-            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.05),rgba(0,0,0,0.4))]" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full border border-white/30 bg-white/10 text-xl text-white backdrop-blur-sm">
-                ▶
-              </div>
-            </div>
+          <div className="relative min-h-[520px] overflow-hidden rounded-[2rem] border border-white/10 bg-black">
+  <video
+    src="/videos/hero-fluid.mp4"
+    autoPlay
+    muted
+    loop
+    playsInline
+    preload="auto"
+    className="absolute inset-0 h-full w-full object-cover"
+  />
+
+  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.05),rgba(0,0,0,0.4))]" />
           </div>
         </section>
 
