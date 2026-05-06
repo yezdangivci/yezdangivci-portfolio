@@ -216,10 +216,18 @@ export default function PersonalServicesPortfolioSite() {
             {previews.map((p) => (
               <button key={p.key} onClick={() => setActivePreview(p.key)} className="text-left group">
                 <div className={`h-52 overflow-hidden rounded-[1.6rem] border border-white/10 p-4 ${p.theme}`}>
-                  {p.key === 'boho' && <BohoCard />}
-                  {p.key === 'coffee' && <CoffeeCard />}
-                  {p.key === 'restaurant' && <RestaurantCard />}
-                  {p.key === 'futuristic' && <FuturisticCard />}
+                 {p.key === 'boho' && (
+  <img src="/images/luma.jpg" alt="Luma Atelier" className="h-full w-full object-cover" />
+)}
+                  {p.key === 'coffee' && (
+  <img src="/images/north-house.jpg" alt="North House" className="h-full w-full object-cover" />
+)}
+                {p.key === 'restaurant' && (
+  <img src="/images/noir-table.jpg" alt="Noir Table" className="h-full w-full object-cover" />
+)}
+             {p.key === 'futuristic' && (
+  <img src="/images/aether-one.jpg" alt="Aether One" className="h-full w-full object-cover" />
+)}
                 </div>
                 <div className="mt-3 text-sm text-neutral-400 group-hover:text-white">{p.title}</div>
               </button>
@@ -233,7 +241,7 @@ export default function PersonalServicesPortfolioSite() {
           <div className="mt-10 grid gap-8 lg:grid-cols-2">
             <a href="https://www.yangtheory.com/journey" target="_blank" rel="noopener noreferrer" className="block overflow-hidden rounded-[2rem] border border-white/10 bg-neutral-900 hover:border-white/20 transition">
               <img
-                src="https://images.unsplash.com/photo-1516979187457-637abb4f9353?q=80&w=1400&auto=format&fit=crop"
+                src="/images.Journey.jpg"
                 alt="Journey project atmosphere"
                 className="h-72 w-full object-cover"
               />
@@ -249,7 +257,7 @@ export default function PersonalServicesPortfolioSite() {
 
             <a href="https://www.yangtheory.com/" target="_blank" rel="noopener noreferrer" className="block overflow-hidden rounded-[2rem] border border-white/10 bg-neutral-900 hover:border-white/20 transition">
               <img
-                src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1400&auto=format&fit=crop"
+                src="/images/yang-theory.jpg"
                 alt="Yang Theory creative platform"
                 className="h-72 w-full object-cover"
               />
@@ -329,7 +337,7 @@ function ContentCard({ title, description, variant, onClick }) {
       <div className="relative aspect-[4/5] overflow-hidden rounded-[1.4rem] border border-white/10 bg-black">
         {variant === "film" && (
           <img
-            src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=1400&auto=format&fit=crop"
+            src="/videos/brand-launch.mp4"
             alt="Brand launch campaign"
             className="absolute inset-0 h-full w-full object-cover"
           />
@@ -337,22 +345,22 @@ function ContentCard({ title, description, variant, onClick }) {
         {variant === "social" && (
           <div className="absolute inset-0 grid grid-cols-2 gap-[2px] bg-black">
             <img
-              src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=800&auto=format&fit=crop"
+              src="/images/campaign-1.jpg"
               alt="Campaign social post 1"
               className="h-full w-full object-cover"
             />
             <img
-              src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=800&auto=format&fit=crop"
+              src="/images/campaign-2.jpg"
               alt="Campaign social post 2"
               className="h-full w-full object-cover"
             />
             <img
-              src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=800&auto=format&fit=crop"
+              src="/images/campaign-3.jpg"
               alt="Campaign social post 3"
               className="h-full w-full object-cover"
             />
             <img
-              src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?q=80&w=800&auto=format&fit=crop"
+              src="/images/campaign-4.jpg"
               alt="Campaign social post 4"
               className="h-full w-full object-cover"
             />
@@ -360,7 +368,7 @@ function ContentCard({ title, description, variant, onClick }) {
         )}
         {variant === "product" && (
           <img
-            src="https://images.unsplash.com/photo-1526045478516-99145907023c?q=80&w=1200&auto=format&fit=crop"
+            src="/images/product-story-3.jpg"
             alt="Product story clip"
             className="absolute inset-0 h-full w-full object-cover"
           />
@@ -927,7 +935,7 @@ function FilmPreview({ onClose }) {
 
         <div className="relative mt-12 overflow-hidden rounded-[1.8rem] border border-white/10">
           <img
-            src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=1600&auto=format&fit=crop"
+            src="/videos.brand-launch.mp4"
             alt="Brand launch campaign hero"
             className="h-[520px] w-full object-cover"
           />
@@ -939,15 +947,14 @@ function FilmPreview({ onClose }) {
           </div>
           <div className="absolute left-8 top-8 text-[10px] uppercase tracking-[0.22em] text-white/62">Launch visual</div>
           <div className="absolute bottom-8 left-8 max-w-sm text-sm leading-7 text-white/72">
-            Hero film still for a fashion-led product campaign.
+            Hero film for an organic food product campaign.
           </div>
         </div>
 
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           <div>
             <img
-              src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1000&auto=format&fit=crop"
-              alt="Opening frame"
+              src="/images.brand-launch-1.jpg"
               className="h-72 w-full rounded-[1.4rem] border border-white/10 object-cover"
             />
             <div className="mt-3 text-[11px] uppercase tracking-[0.18em] text-white/40">Opening Frame</div>
@@ -958,7 +965,7 @@ function FilmPreview({ onClose }) {
 
           <div>
             <img
-              src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?q=80&w=1000&auto=format&fit=crop"
+              src="/images.brand-launch-2.jpg"
               alt="Detail and texture"
               className="h-72 w-full rounded-[1.4rem] border border-white/10 object-cover"
             />
@@ -970,7 +977,7 @@ function FilmPreview({ onClose }) {
 
           <div>
             <img
-              src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=1000&auto=format&fit=crop"
+              src="/images.brand-launch-3.jpg"
               alt="Narrative moment"
               className="h-72 w-full rounded-[1.4rem] border border-white/10 object-cover"
             />
@@ -1033,15 +1040,15 @@ function SocialPreview({ onClose }) {
 
         {/* CATALOG GRID (REAL FEEL) */}
         <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=800&auto=format&fit=crop" className="aspect-[4/5] object-cover rounded-[1.2rem] border border-white/10" />
-          <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=800&auto=format&fit=crop" className="aspect-[4/5] object-cover rounded-[1.2rem] border border-white/10" />
-          <img src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?q=80&w=800&auto=format&fit=crop" className="aspect-[4/5] object-cover rounded-[1.2rem] border border-white/10" />
-          <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=800&auto=format&fit=crop" className="aspect-[4/5] object-cover rounded-[1.2rem] border border-white/10" />
+          <img src="/images/campaign-1.jpg" />
+          <img src="/images/campaign-2.jpg" />
+          <img src="/images/campaign-3.jpg" />
+          <img src="/images/campaign-4.jpg" />
 
-          <img src="https://images.unsplash.com/photo-1526045478516-99145907023c?q=80&w=800&auto=format&fit=crop" className="aspect-[4/5] object-cover rounded-[1.2rem] border border-white/10" />
-          <img src="https://images.unsplash.com/photo-1503342217505-b0a15cf70489?q=80&w=800&auto=format&fit=crop" className="aspect-[4/5] object-cover rounded-[1.2rem] border border-white/10" />
-          <img src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?q=80&w=800&auto=format&fit=crop" className="aspect-[4/5] object-cover rounded-[1.2rem] border border-white/10" />
-          <img src="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?q=80&w=800&auto=format&fit=crop" className="aspect-[4/5] object-cover rounded-[1.2rem] border border-white/10" />
+          <img src="/images/campaign-5.jpg" />
+          <img src="/images/campaign-6.jpg" />
+          <img src="/images/campaign-7.jpg" />
+          <img src="/images/campaign-8.jpg" />
         </div>
 
         {/* STRUCTURE */}
@@ -1132,7 +1139,7 @@ function ProductPreview({ onClose }) {
         {/* HERO - LUXURY */}
         <div className="relative overflow-hidden rounded-[1.8rem] border border-white/10">
           <img
-            src="https://images.unsplash.com/photo-1585386959984-a41552231658?q=80&w=1600&auto=format&fit=crop"
+            src="/videos/product-story.mp4"
             className="h-[520px] w-full object-cover"
           />
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.1),rgba(0,0,0,0.6))]" />
@@ -1150,15 +1157,15 @@ function ProductPreview({ onClose }) {
         {/* CLOSE-UP LUXURY GRID */}
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           <img
-            src="https://images.unsplash.com/photo-1526045478516-99145907023c?q=80&w=1000&auto=format&fit=crop"
+            src="/images/product-story-1.jpg"
             className="h-80 w-full object-cover rounded-[1.4rem] border border-white/10"
           />
           <img
-            src="https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?q=80&w=1000&auto=format&fit=crop"
+            src="/images/product-story-2.jpg"
             className="h-80 w-full object-cover rounded-[1.4rem] border border-white/10"
           />
           <img
-            src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=1000&auto=format&fit=crop"
+            src="/images/product-story-3.jpg"
             className="h-80 w-full object-cover rounded-[1.4rem] border border-white/10"
           />
         </div>
