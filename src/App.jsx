@@ -127,18 +127,24 @@ export default function PersonalServicesPortfolioSite() {
             </div>
           </div>
 
-          <div className="relative min-h-[520px] overflow-hidden rounded-[2rem] border border-white/10">
-           <video
-  autoPlay
-  loop
-  muted
-  playsInline
-  className="absolute inset-0 h-full w-full object-cover"
->
-  <source
-    src="https://res.cloudinary.com/dluw233th/video/upload/v1777175028/0425_3_ki6pqp.mp4"
-    type="video/mp4"
-  />
+          <div className="relative min-h-[520px] overflow-hidden rounded-[2rem] border border-white/10 bg-black">
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="auto"
+              className="absolute inset-0 h-full w-full object-cover"
+            >
+              <source
+                src="https://res.cloudinary.com/dluw233th/video/upload/v1777175028/0425_3_ki6pqp.mp4"
+                type="video/mp4"
+              />
+            </video>
+
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.05),rgba(0,0,0,0.4))]" />
+          </div>
+        </section>
 </video>
           <div className="relative min-h-[520px] overflow-hidden rounded-[2rem] border border-white/10 bg-black">
   <video
