@@ -225,8 +225,8 @@ export default function PersonalServicesPortfolioSite() {
         <section className="mb-32 font-clean">
           <div className="text-[11px] uppercase tracking-[0.14em] text-neutral-500">Design Range</div>
           <div className="mt-4 max-w-xl text-sm leading-7 text-neutral-400">
-            Different visual directions, different brand worlds. These are website landing concepts —
-            each opens into a full homepage design.
+            Different visual directions, different brand worlds. These are website landing concepts
+           each opens into a full homepage design.
           </div>
           <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
             {previews.map((p) => (
