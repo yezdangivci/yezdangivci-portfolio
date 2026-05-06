@@ -286,7 +286,7 @@ export default function PersonalServicesPortfolioSite() {
               className="block overflow-hidden rounded-[2rem] border border-white/10 bg-neutral-900 hover:border-white/20 transition"
             >
               <img
-                src="/images/journey.jpg"
+                src="/images/Journey.jpg"
                 alt="Journey project atmosphere"
                 className="h-72 w-full object-cover"
               />
