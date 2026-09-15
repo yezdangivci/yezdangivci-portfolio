@@ -44,8 +44,8 @@ function sceneOpacity(localT, isFirst) {
   return 1;
 }
 
-function sceneScale(localT, isLast) {
-  if (isLast) return 1;
+function sceneScale(localT, isLast, noScale) {
+  if (isLast || noScale) return 1;
   if (localT > 1 - OVERLAP) {
     const p = (localT - (1 - OVERLAP)) / OVERLAP;
     return 1 + p * 0.06;
@@ -169,7 +169,7 @@ export default function FullLanding() {
                 (localT < 0 || localT > 1
                   ? Math.max(0, 1 - Math.abs(localT < 0 ? localT : localT - 1) / OVERLAP)
                   : 1);
-          const scale = sceneScale(clamp(localT, 0, 1), isLast);
+          const scale = sceneScale(clamp(localT, 0, 1), isLast, scene.contained);
           const finalOpacity = clamp(opacity, 0, 1);
 
           if (finalOpacity <= 0.001 && !(isLast && localT >= 1)) return null;
