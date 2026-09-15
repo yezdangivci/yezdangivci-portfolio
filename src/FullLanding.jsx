@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
+import ZaruYezShift from "./ZaruYezShift";
 
 /**
  * FullLanding v2
@@ -162,17 +163,43 @@ export default function FullLanding() {
           const localT = progress - i;
           const isLast = i === SCENES.length - 1;
           const isFirst = i === 0;
-          const opacity =
-            localT < -OVERLAP || localT > 1 + OVERLAP
-              ? 0
-              : sceneOpacity(clamp(localT, 0, 1), isFirst) *
-                (localT < 0 || localT > 1
-                  ? Math.max(0, 1 - Math.abs(localT < 0 ? localT : localT - 1) / OVERLAP)
-                  : 1);
-          const scale = sceneScale(clamp(localT, 0, 1), isLast, scene.contained);
-          const finalOpacity = clamp(opacity, 0, 1);
 
-          if (finalOpacity <= 0.001 && !(isLast && localT >= 1)) return null;
+          let finalOpacity;
+          let scale = 1;
+
+          if (i === 0) {
+            // Zaru: shader bölgesi başlayana kadar tam görünür, sonra
+            // görünmez OLUR ama DOM'dan kaldırılmaz (canvas onu
+            // yakalamaya devam edebilsin diye video oynamaya devam eder).
+            finalOpacity = progress < 1 - OVERLAP ? 1 : 0;
+          } else if (i === 1) {
+            // Yez: shader bölgesi bitene kadar görünmez (ama oynuyor),
+            // bittikten sonra kendi normal crossfade mantığına döner.
+            if (progress < 1 + OVERLAP) {
+              finalOpacity = 0;
+            } else {
+              const lt = clamp(localT, 0, 1);
+              finalOpacity = clamp(sceneOpacity(lt, false), 0, 1);
+              scale = sceneScale(lt, false, false);
+            }
+          } else {
+            const opacity =
+              localT < -OVERLAP || localT > 1 + OVERLAP
+                ? 0
+                : sceneOpacity(clamp(localT, 0, 1), isFirst) *
+                  (localT < 0 || localT > 1
+                    ? Math.max(0, 1 - Math.abs(localT < 0 ? localT : localT - 1) / OVERLAP)
+                    : 1);
+            finalOpacity = clamp(opacity, 0, 1);
+            scale = sceneScale(clamp(localT, 0, 1), isLast, scene.contained);
+          }
+
+          // Zaru ve Yez HER ZAMAN render edilir (opacity 0 olsa bile) —
+          // shader canvas'ının onları yakalayabilmesi için oynamaya
+          // devam etmeleri gerekiyor. Diğer sahneler görünmezken DOM'dan
+          // kaldırılabilir (performans).
+          const alwaysRender = i === 0 || i === 1;
+          if (!alwaysRender && finalOpacity <= 0.001 && !(isLast && localT >= 1)) return null;
 
           return (
             <div
@@ -235,6 +262,14 @@ export default function FullLanding() {
             </div>
           );
         })}
+
+        <ZaruYezShift
+          zaruRef={{ current: videoRefs.current[0] }}
+          yezRef={{ current: videoRefs.current[1] }}
+          active={progress >= 1 - OVERLAP && progress <= 1 + OVERLAP}
+          localT={(progress - (1 - OVERLAP)) / (2 * OVERLAP)}
+          zIndex={50}
+        />
 
         {SCENES.map((s) => (
           <div key={s.id + "-spacer"} className="h-[100dvh] w-full" />
