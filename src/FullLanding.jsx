@@ -34,15 +34,20 @@ function clamp(v, a, b) {
   return Math.max(a, Math.min(b, v));
 }
 
-function sceneOpacity(localT, isFirst) {
-  if (isFirst) {
-    // İlk sahneden önce hiçbir şey yok — solmadan, tam görünür başlar.
-    if (localT > 1 - OVERLAP) return (1 - localT) / OVERLAP;
-    return 1;
-  }
-  if (localT < OVERLAP) return localT / OVERLAP;
-  if (localT > 1 - OVERLAP) return (1 - localT) / OVERLAP;
-  return 1;
+// Simetrik crossfade: her sahne kendi [0,1] "ev" aralığının DIŞINA, her
+// iki yanda OVERLAP kadar taşarak görünür olur. Böylece sahne i'nin
+// çıkış rampası (localT: 1-OVERLAP..1+OVERLAP) ile sahne i+1'in giriş
+// rampası (localT: -OVERLAP..OVERLAP, yani aynı progress aralığı) TAM
+// örtüşür ve her noktada toplamları 1 eder — biri 0'a düşerken diğeri
+// yükseliyor, ikisi de aynı anda 0 olmuz.
+function sceneOpacity(localT, isFirst, isLast) {
+  if (isFirst && localT <= OVERLAP) return 1; // önce hiçbir şey yok, hemen tam görünür
+  if (isLast && localT >= 1 - OVERLAP) return 1; // sonra hiçbir şey yok, hiç sönmez
+
+  if (localT <= -OVERLAP || localT >= 1 + OVERLAP) return 0;
+  if (localT < OVERLAP) return clamp((localT + OVERLAP) / (2 * OVERLAP), 0, 1);
+  if (localT <= 1 - OVERLAP) return 1;
+  return clamp(1 - (localT - (1 - OVERLAP)) / (2 * OVERLAP), 0, 1);
 }
 
 function sceneScale(localT, isLast, noScale) {
@@ -56,6 +61,20 @@ function sceneScale(localT, isLast, noScale) {
     return 1.04 - p * 0.04;
   }
   return 1;
+}
+
+// Sheila -> Burton: göz-göze konum eşleştirmeli zoom.
+// Çıkış (Sheila): yavaş başlayıp hızlanan zoom-in (ease-in, p^2).
+// Giriş (Burton): hızlı başlayıp yavaşça yerleşen zoom-out (ease-out, 1-(1-p)^3).
+const SHEILA_EYE = { x: 50, y: 26 };
+const BURTON_EYE = { x: 50, y: 21 };
+const EYE_ZOOM = 0.42;
+
+function easeInQuad(p) {
+  return p * p;
+}
+function easeOutCubic(p) {
+  return 1 - Math.pow(1 - p, 3);
 }
 
 export default function FullLanding() {
@@ -178,20 +197,27 @@ export default function FullLanding() {
             if (progress < 1 + OVERLAP) {
               finalOpacity = 0;
             } else {
-              const lt = clamp(localT, 0, 1);
-              finalOpacity = clamp(sceneOpacity(lt, false), 0, 1);
-              scale = sceneScale(lt, false, false);
+              finalOpacity = clamp(sceneOpacity(localT, false, false), 0, 1);
+              scale = sceneScale(clamp(localT, 0, 1), false, false);
             }
           } else {
-            const opacity =
-              localT < -OVERLAP || localT > 1 + OVERLAP
-                ? 0
-                : sceneOpacity(clamp(localT, 0, 1), isFirst) *
-                  (localT < 0 || localT > 1
-                    ? Math.max(0, 1 - Math.abs(localT < 0 ? localT : localT - 1) / OVERLAP)
-                    : 1);
-            finalOpacity = clamp(opacity, 0, 1);
+            finalOpacity = clamp(sceneOpacity(localT, false, isLast), 0, 1);
             scale = sceneScale(clamp(localT, 0, 1), isLast, scene.contained);
+          }
+
+          // Sheila (i=4) çıkışı ve Burton (i=5) girişi — göz-göze konum
+          // eşleştirmeli, asimetrik hızlı zoom. transformOrigin ile göz
+          // noktasına kilitlenip, farklı easing eğrileriyle ölçekleniyor.
+          let transformOrigin = "center center";
+          if (i === 4 && localT > 1 - OVERLAP) {
+            const p = clamp((localT - (1 - OVERLAP)) / OVERLAP, 0, 1);
+            scale = 1 + easeInQuad(p) * EYE_ZOOM;
+            transformOrigin = `${SHEILA_EYE.x}% ${SHEILA_EYE.y}%`;
+          }
+          if (i === 5 && localT < OVERLAP) {
+            const p = clamp(localT, 0, OVERLAP) / OVERLAP;
+            scale = 1 + (1 - easeOutCubic(p)) * EYE_ZOOM;
+            transformOrigin = `${BURTON_EYE.x}% ${BURTON_EYE.y}%`;
           }
 
           // Zaru ve Yez HER ZAMAN render edilir (opacity 0 olsa bile) —
@@ -199,21 +225,25 @@ export default function FullLanding() {
           // devam etmeleri gerekiyor. Diğer sahneler görünmezken DOM'dan
           // kaldırılabilir (performans).
           const alwaysRender = i === 0 || i === 1;
-          if (!alwaysRender && finalOpacity <= 0.001 && !(isLast && localT >= 1)) return null;
+          if (!alwaysRender && finalOpacity <= 0.001) return null;
 
           return (
             <div
               key={scene.id}
               className="fixed inset-0 w-full h-full pointer-events-none"
               style={{
-                opacity: isLast ? clamp(localT + 1, 0, 1) : finalOpacity,
+                opacity: finalOpacity,
                 zIndex: 10 + i,
                 backgroundColor: scene.bg,
               }}
             >
               <div
                 className="absolute inset-0 w-full h-full overflow-hidden"
-                style={{ transform: `scale(${scale})`, transition: "transform 0.05s linear" }}
+                style={{
+                  transform: `scale(${scale})`,
+                  transformOrigin,
+                  transition: "transform 0.05s linear",
+                }}
               >
                 {scene.contained ? (
                   <div className="absolute inset-0 w-full h-full flex items-center justify-center">
@@ -270,6 +300,23 @@ export default function FullLanding() {
           localT={(progress - (1 - OVERLAP)) / (2 * OVERLAP)}
           zIndex={50}
         />
+
+        {/* Yez -> Seek Magic: "ışık ışığa dönüşüyor" — bitkinin son
+            parıltısı ile kristalin ilk parıltısı arasında kısa, mavi-mor
+            tonlu bir ışıltı flaşı. Tam geçiş anında (progress=2) doruğa
+            çıkıp iki yanda sönümleniyor. */}
+        {progress > 2 - OVERLAP && progress < 2 + OVERLAP && (
+          <div
+            className="fixed inset-0 pointer-events-none"
+            style={{
+              zIndex: 51,
+              opacity: 1 - Math.abs(progress - 2) / OVERLAP,
+              background:
+                "radial-gradient(circle at 23% 63%, rgba(140,180,255,0.55), rgba(120,90,255,0.25) 35%, transparent 65%)",
+              mixBlendMode: "screen",
+            }}
+          />
+        )}
 
         {SCENES.map((s) => (
           <div key={s.id + "-spacer"} className="h-[100dvh] w-full" />
