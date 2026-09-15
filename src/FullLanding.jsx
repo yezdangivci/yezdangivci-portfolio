@@ -19,7 +19,7 @@ const FONT_HREF =
   "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600&family=Inter:wght@400;500&display=swap";
 
 const SCENES = [
-  { id: "zaru", kind: "video", src: "/videos/scenes/zaru.mp4", sound: true, bg: "#050505" },
+  { id: "zaru", kind: "video", src: "/videos/scenes/zaru.mp4", sound: true, bg: "#050505", contained: true },
   { id: "yez", kind: "video", src: "/videos/scenes/yez.mp4", bg: "#0D0F0C" },
   { id: "seekmagic", kind: "video", src: "/videos/scenes/seekmagic.mp4", bg: "#171310" },
   { id: "ophelia", kind: "image", src: "/images/scenes/ophelia.jpg", bg: "#241C16" },
@@ -188,7 +188,30 @@ export default function FullLanding() {
                 className="absolute inset-0 w-full h-full overflow-hidden"
                 style={{ transform: `scale(${scale})`, transition: "transform 0.05s linear" }}
               >
-                {scene.kind === "video" ? (
+                {scene.contained ? (
+                  <div className="absolute inset-0 w-full h-full flex items-center justify-center">
+                    {scene.kind === "video" ? (
+                      <video
+                        ref={(el) => (videoRefs.current[i] = el)}
+                        className="max-w-[92vw] md:max-w-[58vw] max-h-[64vh] object-contain"
+                        src={scene.src}
+                        muted={scene.sound ? !zaruSoundOn : true}
+                        playsInline
+                        loop={!scene.finale}
+                      />
+                    ) : (
+                      <div
+                        className="max-w-[92vw] md:max-w-[58vw] max-h-[64vh] w-full h-full"
+                        style={{
+                          backgroundImage: `url(${scene.src})`,
+                          backgroundSize: "contain",
+                          backgroundRepeat: "no-repeat",
+                          backgroundPosition: "center",
+                        }}
+                      />
+                    )}
+                  </div>
+                ) : scene.kind === "video" ? (
                   <video
                     ref={(el) => (videoRefs.current[i] = el)}
                     className="absolute inset-0 w-full h-full object-cover"
