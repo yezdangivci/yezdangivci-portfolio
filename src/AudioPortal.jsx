@@ -210,12 +210,12 @@ function ChapterRow({ chapter }) {
   return (
     <section
       id={chapter.id}
-      className="grid grid-cols-1 md:grid-cols-[220px_260px_1fr] gap-6 py-10 border-b border-[#3A342B]/30 scroll-mt-24"
+      className="grid grid-cols-1 md:grid-cols-[340px_1fr] gap-8 py-12 border-b border-[#3A342B]/30 scroll-mt-24"
     >
       <img
         src={chapter.image}
         alt={chapter.title}
-        className="w-full md:w-[220px] h-[220px] object-cover rounded-sm"
+        className="w-full md:w-[340px] h-auto object-contain rounded-sm self-start"
       />
       <div>
         <h3
@@ -225,12 +225,12 @@ function ChapterRow({ chapter }) {
           {chapter.title}
         </h3>
         <p className="text-[#F5F1E8]/60 text-sm mb-4">{chapter.subtitle}</p>
-        <audio controls src={chapter.audio} className="w-full max-w-[260px] mb-3" />
-        <p className="text-[#F5F1E8]/40 text-xs tracking-wide">{chapter.pages}</p>
+        <audio controls src={chapter.audio} className="w-full max-w-[340px] mb-3" />
+        <p className="text-[#F5F1E8]/40 text-xs tracking-wide mb-5">{chapter.pages}</p>
+        <p className="text-[#F5F1E8]/75 text-[15px] leading-relaxed whitespace-pre-line">
+          {chapter.text}
+        </p>
       </div>
-      <p className="text-[#F5F1E8]/75 text-[15px] leading-relaxed whitespace-pre-line">
-        {chapter.text}
-      </p>
     </section>
   );
 }
