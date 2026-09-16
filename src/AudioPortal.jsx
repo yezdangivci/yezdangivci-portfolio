@@ -1,5 +1,22 @@
 import React, { useRef, useState, useEffect } from "react";
 
+const FONT_HREF =
+  "https://fonts.googleapis.com/css2?family=Fahkwang:wght@400;500;600;700&family=Lato:ital,wght@0,300;0,400;1,300&display=swap";
+
+function useFontLoader() {
+  useEffect(() => {
+    if (document.getElementById("ap-font-link")) return;
+    const link = document.createElement("link");
+    link.id = "ap-font-link";
+    link.rel = "stylesheet";
+    link.href = FONT_HREF;
+    document.head.appendChild(link);
+  }, []);
+}
+
+const HEADING_FONT = "Fahkwang, sans-serif";
+const BODY_FONT = "'Lato', sans-serif";
+
 function formatTime(s) {
   if (!isFinite(s)) return "0:00";
   const m = Math.floor(s / 60);
@@ -300,48 +317,56 @@ const LISTEN_ON = [
   { label: "Amazon Music", href: "https://music.amazon.in/artists/B0GQJMHQKP/yang-studio" },
 ];
 
-// Aşamalı ton geçişi — Zaru/Yez zincirindeki "ısınma eğrisi" mantığının
-// aynısı: koyu/derin başlayıp, bölüm bölüm hafifçe ılıklaşıyor.
+// Aşamalı ton geçişi — siyahtan, Journey dünyasının mistik mavi-moruna
+// doğru net bir şekilde aydınlanıyor (kahverengi değil, sıcak/ılık değil —
+// büyülü, parlayan bir yöne).
 const CHAPTER_BG = [
-  "#100F0D", "#141210", "#181512", "#1C1815", "#201B17", "#241E19",
-  "#281F1A", "#2C221B", "#30251D", "#34281E", "#382B20",
+  "#0A0A0F", "#0D0D16", "#11101E", "#151228", "#1A1433", "#20163F",
+  "#26184B", "#2D1B59", "#351E67", "#3E2276", "#482685",
 ];
 
 function ChapterRow({ chapter, index }) {
-  const flip = index % 2 === 1;
   return (
     <section
       id={chapter.id}
       className="py-20 border-b border-[#F5F1E8]/10 scroll-mt-24"
       style={{ backgroundColor: CHAPTER_BG[index] || CHAPTER_BG[CHAPTER_BG.length - 1] }}
     >
-      <div className="max-w-5xl mx-auto px-6">
-        <div
-          className={`grid grid-cols-1 md:grid-cols-[340px_1fr] gap-12 items-start ${
-            flip ? "md:[direction:rtl]" : ""
-          }`}
-        >
-          <img
-            src={chapter.image}
-            alt={chapter.title}
-            className="w-full md:w-[340px] h-auto object-contain rounded-sm self-start"
-            style={{ direction: "ltr" }}
-          />
-          <div style={{ direction: "ltr" }}>
-            <p className="text-xs tracking-[0.25em] text-[#F5F1E8]/40 mb-2">
+      <div className="max-w-[1400px] mx-auto px-8 md:px-16">
+        <div className="grid grid-cols-1 md:grid-cols-[400px_1fr] gap-16 items-center">
+          <div className="w-full h-[400px] flex items-center justify-center bg-black/20 rounded-sm">
+            <img
+              src={chapter.image}
+              alt={chapter.title}
+              className="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <div>
+            <p
+              className="text-xs tracking-[0.25em] text-[#F5F1E8]/40 mb-2"
+              style={{ fontFamily: BODY_FONT }}
+            >
               {String(index + 1).padStart(2, "0")} — {chapter.pages}
             </p>
             <h3
               className="text-4xl md:text-5xl text-[#F5F1E8] mb-2 leading-tight"
-              style={{ fontFamily: "Fraunces, serif", fontWeight: 600 }}
+              style={{ fontFamily: HEADING_FONT, fontWeight: 600 }}
             >
               {chapter.title}
             </h3>
-            <p className="text-[#F5F1E8]/50 text-lg mb-6 italic">{chapter.subtitle}</p>
+            <p
+              className="text-[#F5F1E8]/50 text-lg mb-6 italic"
+              style={{ fontFamily: BODY_FONT, fontWeight: 300 }}
+            >
+              {chapter.subtitle}
+            </p>
             <div className="max-w-md mb-8">
               <AudioPlayer src={chapter.audio} />
             </div>
-            <p className="text-[#F5F1E8]/75 text-[16px] leading-relaxed whitespace-pre-line max-w-xl">
+            <p
+              className="text-[#F5F1E8]/75 text-[16px] leading-relaxed whitespace-pre-line max-w-xl"
+              style={{ fontFamily: BODY_FONT, fontWeight: 300 }}
+            >
               {chapter.text}
             </p>
           </div>
@@ -351,42 +376,54 @@ function ChapterRow({ chapter, index }) {
   );
 }
 
-function ChapterNav() {
-  return (
-    <div className="sticky top-0 z-20 bg-[#100F0D]/90 backdrop-blur-md border-b border-[#F5F1E8]/10 overflow-x-auto">
-      <div className="flex gap-2 px-6 py-3 max-w-5xl mx-auto whitespace-nowrap">
-        {CHAPTERS.map((c) => (
-          <a
-            key={c.id}
-            href={`#${c.id}`}
-            className="text-xs tracking-wide text-[#F5F1E8]/60 border border-[#F5F1E8]/15 rounded-full px-3 py-1.5 hover:text-[#F5F1E8] hover:border-[#F5F1E8]/50 transition-colors shrink-0"
-          >
-            {c.title}
-          </a>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 export default function AudioPortal() {
+  useFontLoader();
+
+  // Tarayıcının native "#anchor'a git" davranışı, React içerik
+  // render OLMADAN ÖNCE tetiklendiği için çoğu zaman başarısız oluyor
+  // (element henüz DOM'da yok). Bu yüzden mount olduktan SONRA,
+  // elle kontrol edip kaydırıyoruz — QR kodların güvenilir çalışması
+  // için bu kritik.
+  useEffect(() => {
+    const id = window.location.hash.replace("#", "");
+    if (!id) return;
+    const t = setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: "instant", block: "start" });
+    }, 150);
+    return () => clearTimeout(t);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-[#100F0D] text-[#F5F1E8]">
-      <ChapterNav />
+    <div className="min-h-screen bg-[#0A0A0F] text-[#F5F1E8]">
+      <style>{`
+        @keyframes ap-wave {
+          0%   { background-position: 0% 50%; }
+          50%  { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        .ap-wavy-text {
+          background-size: 300% 300%;
+          animation: ap-wave 6s ease-in-out infinite;
+        }
+      `}</style>
 
       {/* Hero — tam genişlik, dramatik */}
-      <div className="text-center pt-20 pb-16 px-6 border-b border-[#F5F1E8]/10">
+      <div className="text-center pt-24 pb-16 px-6 border-b border-[#F5F1E8]/10">
         <h1
-          className="text-6xl md:text-8xl font-bold mb-8 bg-clip-text text-transparent"
+          className="ap-wavy-text text-6xl md:text-8xl font-bold mb-8 bg-clip-text text-transparent"
           style={{
-            fontFamily: "Fraunces, serif",
+            fontFamily: HEADING_FONT,
             backgroundImage:
-              "linear-gradient(90deg, #E8C15A, #7FD1AE, #6FB8E8, #C58AE8)",
+              "linear-gradient(90deg, #E8C15A, #7FD1AE, #6FB8E8, #C58AE8, #E8C15A)",
           }}
         >
           Audio Portal
         </h1>
-        <p className="text-[#F5F1E8]/70 max-w-xl mx-auto leading-relaxed text-lg mb-14">
+        <p
+          className="text-[#F5F1E8]/70 max-w-xl mx-auto leading-relaxed text-lg mb-14"
+          style={{ fontFamily: BODY_FONT, fontWeight: 300 }}
+        >
           This overture is your gateway, weaving the core themes of the 11
           guardians into a single orchestral narrative.
           <br />
@@ -401,8 +438,12 @@ export default function AudioPortal() {
             className="w-24 h-24 object-cover rounded shrink-0"
           />
           <div className="flex-1 text-left">
-            <p className="text-xs tracking-wide text-black/50">Yang Studio</p>
-            <p className="font-semibold text-lg mb-3">Journey — The Overture</p>
+            <p className="text-xs tracking-wide text-black/50" style={{ fontFamily: BODY_FONT }}>
+              Yang Studio
+            </p>
+            <p className="font-semibold text-lg mb-3" style={{ fontFamily: HEADING_FONT }}>
+              Journey — The Overture
+            </p>
             <AudioPlayer
               src="/audio-portal/mp3/01 - Yang Studio_Journey_Overture .mp3"
               dark={false}
@@ -410,51 +451,60 @@ export default function AudioPortal() {
           </div>
         </div>
 
-        {/* Listen on */}
-        <div className="mt-16">
+        {/* Order your book — birincil, öne çıkan CTA */}
+        <div className="mt-10">
+          <a
+            href="https://amzn.to/4c1DNeT"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-block bg-gradient-to-r from-[#E8C15A] to-[#C58AE8] text-[#100F0D] rounded-full px-12 py-4 text-lg font-bold hover:opacity-90 transition-opacity shadow-lg"
+            style={{ fontFamily: HEADING_FONT }}
+          >
+            Order Your Book →
+          </a>
+        </div>
+
+        {/* Listen on — ikincil, daha sade */}
+        <div className="mt-14">
           <h2
-            className="text-3xl mb-6 font-bold tracking-wide"
+            className="ap-wavy-text text-2xl mb-5 font-semibold tracking-[0.2em]"
             style={{
-              fontFamily: "Fraunces, serif",
-              backgroundImage: "linear-gradient(90deg, #1F3A93, #4A90D9)",
+              fontFamily: HEADING_FONT,
+              backgroundImage: "linear-gradient(90deg, #1F3A93, #6FB8E8, #1F3A93)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
             }}
           >
             LISTEN ON
           </h2>
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-3">
             {LISTEN_ON.map((l) => (
               <a
                 key={l.label}
                 href={l.href}
                 target="_blank"
                 rel="noreferrer"
-                className="border border-[#F5F1E8]/25 rounded-full px-6 py-2 text-sm hover:bg-[#F5F1E8] hover:text-[#100F0D] transition-colors"
+                className="border border-[#F5F1E8]/20 rounded-full px-5 py-2 text-sm hover:bg-[#F5F1E8] hover:text-[#100F0D] transition-colors"
+                style={{ fontFamily: BODY_FONT }}
               >
                 {l.label}
               </a>
             ))}
           </div>
         </div>
-
-        <div className="flex flex-wrap justify-center gap-4 mt-10">
-          <a
-            href="https://amzn.to/4c1DNeT"
-            target="_blank"
-            rel="noreferrer"
-            className="bg-[#F5F1E8] text-[#100F0D] rounded-full px-7 py-3 text-sm font-medium hover:opacity-90 transition-opacity"
-          >
-            Order your book
-          </a>
-        </div>
       </div>
 
-      {/* Chapters — zigzag, aşamalı ton geçişi */}
-      <div className="text-center pt-16 pb-4">
+      {/* Chapters */}
+      <div className="text-center pt-20 pb-6">
+        <p
+          className="text-xs tracking-[0.3em] text-[#F5F1E8]/40 mb-3"
+          style={{ fontFamily: BODY_FONT }}
+        >
+          ELEVEN GUARDIANS
+        </p>
         <h2
-          className="text-5xl"
-          style={{ fontFamily: "Fraunces, serif", fontWeight: 600 }}
+          className="text-5xl md:text-6xl"
+          style={{ fontFamily: HEADING_FONT, fontWeight: 700 }}
         >
           Choose your chapter
         </h2>
@@ -463,6 +513,57 @@ export default function AudioPortal() {
         {CHAPTERS.map((c, i) => (
           <ChapterRow key={c.id} chapter={c} index={i} />
         ))}
+      </div>
+
+      {/* Kapanış — Journey videosuyla dünyaya giriş + tekrar Order Book */}
+      <div
+        className="py-24 px-6 text-center border-t border-[#F5F1E8]/10"
+        style={{ backgroundColor: CHAPTER_BG[CHAPTER_BG.length - 1] }}
+      >
+        <p
+          className="text-xs tracking-[0.3em] text-[#F5F1E8]/40 mb-3"
+          style={{ fontFamily: BODY_FONT }}
+        >
+          THE JOURNEY CONTINUES
+        </p>
+        <h2
+          className="text-4xl md:text-5xl mb-10"
+          style={{ fontFamily: HEADING_FONT, fontWeight: 700 }}
+        >
+          Enter the world of Journey
+        </h2>
+
+        <a
+          href="/"
+          className="group relative block max-w-3xl mx-auto rounded-lg overflow-hidden mb-10"
+        >
+          <video
+            src="/videos/scenes/yez.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="w-full h-[380px] object-cover"
+          />
+          <div className="absolute inset-0 bg-black/40 group-hover:bg-black/25 transition-colors flex items-center justify-center">
+            <span
+              className="border border-[#F5F1E8]/60 rounded-full px-8 py-3 text-[#F5F1E8] bg-black/30 backdrop-blur-sm group-hover:bg-[#F5F1E8] group-hover:text-[#100F0D] transition-colors"
+              style={{ fontFamily: HEADING_FONT }}
+            >
+              Enter the World →
+            </span>
+          </div>
+        </a>
+
+        <a
+          href="https://amzn.to/4c1DNeT"
+          target="_blank"
+          rel="noreferrer"
+          className="inline-block bg-gradient-to-r from-[#E8C15A] to-[#C58AE8] text-[#100F0D] rounded-full px-12 py-4 text-lg font-bold hover:opacity-90 transition-opacity shadow-lg"
+          style={{ fontFamily: HEADING_FONT }}
+        >
+          Order Your Book →
+        </a>
       </div>
     </div>
   );
