@@ -300,69 +300,109 @@ const LISTEN_ON = [
   { label: "Amazon Music", href: "https://music.amazon.in/artists/B0GQJMHQKP/yang-studio" },
 ];
 
-function ChapterRow({ chapter }) {
+// Aşamalı ton geçişi — Zaru/Yez zincirindeki "ısınma eğrisi" mantığının
+// aynısı: koyu/derin başlayıp, bölüm bölüm hafifçe ılıklaşıyor.
+const CHAPTER_BG = [
+  "#100F0D", "#141210", "#181512", "#1C1815", "#201B17", "#241E19",
+  "#281F1A", "#2C221B", "#30251D", "#34281E", "#382B20",
+];
+
+function ChapterRow({ chapter, index }) {
+  const flip = index % 2 === 1;
   return (
     <section
       id={chapter.id}
-      className="grid grid-cols-1 md:grid-cols-[280px_280px_1fr] gap-8 py-12 border-b border-[#3A342B]/30 scroll-mt-24"
+      className="py-20 border-b border-[#F5F1E8]/10 scroll-mt-24"
+      style={{ backgroundColor: CHAPTER_BG[index] || CHAPTER_BG[CHAPTER_BG.length - 1] }}
     >
-      <img
-        src={chapter.image}
-        alt={chapter.title}
-        className="w-full md:w-[280px] h-auto object-contain rounded-sm self-start"
-      />
-      <div>
-        <h3
-          className="text-2xl text-[#F5F1E8]"
-          style={{ fontFamily: "Fraunces, serif", fontWeight: 500 }}
+      <div className="max-w-5xl mx-auto px-6">
+        <div
+          className={`grid grid-cols-1 md:grid-cols-[340px_1fr] gap-12 items-start ${
+            flip ? "md:[direction:rtl]" : ""
+          }`}
         >
-          {chapter.title}
-        </h3>
-        <p className="text-[#F5F1E8]/60 text-sm mb-5">{chapter.subtitle}</p>
-        <AudioPlayer src={chapter.audio} />
-        <p className="text-[#F5F1E8]/40 text-xs tracking-wide mt-4">{chapter.pages}</p>
+          <img
+            src={chapter.image}
+            alt={chapter.title}
+            className="w-full md:w-[340px] h-auto object-contain rounded-sm self-start"
+            style={{ direction: "ltr" }}
+          />
+          <div style={{ direction: "ltr" }}>
+            <p className="text-xs tracking-[0.25em] text-[#F5F1E8]/40 mb-2">
+              {String(index + 1).padStart(2, "0")} — {chapter.pages}
+            </p>
+            <h3
+              className="text-4xl md:text-5xl text-[#F5F1E8] mb-2 leading-tight"
+              style={{ fontFamily: "Fraunces, serif", fontWeight: 600 }}
+            >
+              {chapter.title}
+            </h3>
+            <p className="text-[#F5F1E8]/50 text-lg mb-6 italic">{chapter.subtitle}</p>
+            <div className="max-w-md mb-8">
+              <AudioPlayer src={chapter.audio} />
+            </div>
+            <p className="text-[#F5F1E8]/75 text-[16px] leading-relaxed whitespace-pre-line max-w-xl">
+              {chapter.text}
+            </p>
+          </div>
+        </div>
       </div>
-      <p className="text-[#F5F1E8]/75 text-[15px] leading-relaxed whitespace-pre-line">
-        {chapter.text}
-      </p>
     </section>
+  );
+}
+
+function ChapterNav() {
+  return (
+    <div className="sticky top-0 z-20 bg-[#100F0D]/90 backdrop-blur-md border-b border-[#F5F1E8]/10 overflow-x-auto">
+      <div className="flex gap-2 px-6 py-3 max-w-5xl mx-auto whitespace-nowrap">
+        {CHAPTERS.map((c) => (
+          <a
+            key={c.id}
+            href={`#${c.id}`}
+            className="text-xs tracking-wide text-[#F5F1E8]/60 border border-[#F5F1E8]/15 rounded-full px-3 py-1.5 hover:text-[#F5F1E8] hover:border-[#F5F1E8]/50 transition-colors shrink-0"
+          >
+            {c.title}
+          </a>
+        ))}
+      </div>
+    </div>
   );
 }
 
 export default function AudioPortal() {
   return (
     <div className="min-h-screen bg-[#100F0D] text-[#F5F1E8]">
-      <div className="max-w-4xl mx-auto px-6 py-16">
-        {/* Hero */}
-        <div className="text-center mb-14">
-          <h1
-            className="text-5xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent"
-            style={{
-              fontFamily: "Fraunces, serif",
-              backgroundImage:
-                "linear-gradient(90deg, #E8C15A, #7FD1AE, #6FB8E8, #C58AE8)",
-            }}
-          >
-            Audio Portal
-          </h1>
-          <p className="text-[#F5F1E8]/70 max-w-xl mx-auto leading-relaxed">
-            This overture is your gateway, weaving the core themes of the 11
-            guardians into a single orchestral narrative.
-            <br />
-            Press play, find your focus, and let the forest reveal itself.
-          </p>
-        </div>
+      <ChapterNav />
 
-        {/* Overture player */}
-        <div className="flex items-center gap-5 bg-[#F5F1E8] text-[#100F0D] rounded-md p-5 mb-16">
+      {/* Hero — tam genişlik, dramatik */}
+      <div className="text-center pt-20 pb-16 px-6 border-b border-[#F5F1E8]/10">
+        <h1
+          className="text-6xl md:text-8xl font-bold mb-8 bg-clip-text text-transparent"
+          style={{
+            fontFamily: "Fraunces, serif",
+            backgroundImage:
+              "linear-gradient(90deg, #E8C15A, #7FD1AE, #6FB8E8, #C58AE8)",
+          }}
+        >
+          Audio Portal
+        </h1>
+        <p className="text-[#F5F1E8]/70 max-w-xl mx-auto leading-relaxed text-lg mb-14">
+          This overture is your gateway, weaving the core themes of the 11
+          guardians into a single orchestral narrative.
+          <br />
+          Press play, find your focus, and let the forest reveal itself.
+        </p>
+
+        {/* Overture — tam genişlikte, kart değil, bir eşik */}
+        <div className="max-w-3xl mx-auto flex items-center gap-6 bg-[#F5F1E8] text-[#100F0D] rounded-lg p-7">
           <img
             src="/audio-portal/images/overture-cover.png"
             alt="Journey — The Overture"
-            className="w-20 h-20 object-cover rounded shrink-0"
+            className="w-24 h-24 object-cover rounded shrink-0"
           />
-          <div className="flex-1">
+          <div className="flex-1 text-left">
             <p className="text-xs tracking-wide text-black/50">Yang Studio</p>
-            <p className="font-medium mb-3">Journey — The Overture</p>
+            <p className="font-semibold text-lg mb-3">Journey — The Overture</p>
             <AudioPlayer
               src="/audio-portal/mp3/01 - Yang Studio_Journey_Overture .mp3"
               dark={false}
@@ -371,7 +411,7 @@ export default function AudioPortal() {
         </div>
 
         {/* Listen on */}
-        <div className="text-center mb-16">
+        <div className="mt-16">
           <h2
             className="text-3xl mb-6 font-bold tracking-wide"
             style={{
@@ -398,8 +438,7 @@ export default function AudioPortal() {
           </div>
         </div>
 
-        {/* Order / download */}
-        <div className="flex flex-wrap justify-center gap-4 mb-20">
+        <div className="flex flex-wrap justify-center gap-4 mt-10">
           <a
             href="https://amzn.to/4c1DNeT"
             target="_blank"
@@ -409,19 +448,21 @@ export default function AudioPortal() {
             Order your book
           </a>
         </div>
+      </div>
 
-        {/* Chapters */}
+      {/* Chapters — zigzag, aşamalı ton geçişi */}
+      <div className="text-center pt-16 pb-4">
         <h2
-          className="text-4xl text-center mb-4"
-          style={{ fontFamily: "Fraunces, serif", fontWeight: 500 }}
+          className="text-5xl"
+          style={{ fontFamily: "Fraunces, serif", fontWeight: 600 }}
         >
           Choose your chapter
         </h2>
-        <div>
-          {CHAPTERS.map((c) => (
-            <ChapterRow key={c.id} chapter={c} />
-          ))}
-        </div>
+      </div>
+      <div>
+        {CHAPTERS.map((c, i) => (
+          <ChapterRow key={c.id} chapter={c} index={i} />
+        ))}
       </div>
     </div>
   );
