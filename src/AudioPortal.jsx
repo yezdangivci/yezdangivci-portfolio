@@ -317,13 +317,20 @@ const LISTEN_ON = [
   { label: "Amazon Music", href: "https://music.amazon.in/artists/B0GQJMHQKP/yang-studio" },
 ];
 
-// Aşamalı ton geçişi — siyahtan, Journey dünyasının mistik mavi-moruna
-// doğru net bir şekilde aydınlanıyor (kahverengi değil, sıcak/ılık değil —
-// büyülü, parlayan bir yöne).
-const CHAPTER_BG = [
-  "#0A0A0F", "#0D0D16", "#11101E", "#151228", "#1A1433", "#20163F",
-  "#26184B", "#2D1B59", "#351E67", "#3E2276", "#482685",
-];
+// Aşamalı ton geçişi — siyahtan, tam #2358FF'a (Parliament Blue) doğru
+// hesaplanmış bir interpolasyon. Elle seçilmiş hex'ler yerine matematiksel
+// olarak üretiliyor, tam istenen tona ulaşsın diye.
+function lerpColor(a, b, t) {
+  const ah = a.match(/\w\w/g).map((h) => parseInt(h, 16));
+  const bh = b.match(/\w\w/g).map((h) => parseInt(h, 16));
+  const rgb = ah.map((c, i) => Math.round(c + (bh[i] - c) * t));
+  return `#${rgb.map((c) => c.toString(16).padStart(2, "0")).join("")}`;
+}
+const CHAPTER_START = "#0A0A0F";
+const CHAPTER_END = "#2358FF";
+const CHAPTER_BG = Array.from({ length: 11 }, (_, i) =>
+  lerpColor(CHAPTER_START, CHAPTER_END, i / 10)
+);
 
 function ChapterRow({ chapter, index }) {
   return (
