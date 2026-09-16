@@ -1,4 +1,98 @@
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
+
+function formatTime(s) {
+  if (!isFinite(s)) return "0:00";
+  const m = Math.floor(s / 60);
+  const sec = Math.floor(s % 60)
+    .toString()
+    .padStart(2, "0");
+  return `${m}:${sec}`;
+}
+
+function AudioPlayer({ src, dark = true }) {
+  const ref = useRef(null);
+  const [playing, setPlaying] = useState(false);
+  const [current, setCurrent] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  useEffect(() => {
+    const a = ref.current;
+    if (!a) return;
+    const onTime = () => setCurrent(a.currentTime);
+    const onMeta = () => setDuration(a.duration);
+    const onEnd = () => setPlaying(false);
+    a.addEventListener("timeupdate", onTime);
+    a.addEventListener("loadedmetadata", onMeta);
+    a.addEventListener("ended", onEnd);
+    return () => {
+      a.removeEventListener("timeupdate", onTime);
+      a.removeEventListener("loadedmetadata", onMeta);
+      a.removeEventListener("ended", onEnd);
+    };
+  }, []);
+
+  const toggle = () => {
+    const a = ref.current;
+    if (!a) return;
+    if (playing) {
+      a.pause();
+    } else {
+      a.play();
+    }
+    setPlaying(!playing);
+  };
+
+  const seek = (e) => {
+    const a = ref.current;
+    if (!a || !duration) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const pct = (e.clientX - rect.left) / rect.width;
+    a.currentTime = pct * duration;
+  };
+
+  const progressPct = duration ? (current / duration) * 100 : 0;
+  const fg = dark ? "#F5F1E8" : "#100F0D";
+  const track = dark ? "rgba(245,241,232,0.2)" : "rgba(16,15,13,0.15)";
+
+  return (
+    <div className="flex items-center gap-3 w-full">
+      <audio ref={ref} src={src} preload="metadata" />
+      <button
+        onClick={toggle}
+        aria-label={playing ? "Pause" : "Play"}
+        className="shrink-0 w-9 h-9 rounded-full flex items-center justify-center border"
+        style={{ borderColor: fg, color: fg }}
+      >
+        {playing ? (
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+            <rect x="1" y="1" width="3.5" height="10" />
+            <rect x="7" y="1" width="3.5" height="10" />
+          </svg>
+        ) : (
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+            <polygon points="1,0.5 11,6 1,11.5" />
+          </svg>
+        )}
+      </button>
+      <span className="text-xs tabular-nums shrink-0" style={{ color: fg, opacity: 0.7 }}>
+        {formatTime(current)}
+      </span>
+      <div
+        onClick={seek}
+        className="flex-1 h-1.5 rounded-full cursor-pointer relative"
+        style={{ backgroundColor: track }}
+      >
+        <div
+          className="h-full rounded-full absolute left-0 top-0"
+          style={{ width: `${progressPct}%`, backgroundColor: fg }}
+        />
+      </div>
+      <span className="text-xs tabular-nums shrink-0" style={{ color: fg, opacity: 0.7 }}>
+        {formatTime(duration)}
+      </span>
+    </div>
+  );
+}
 
 /**
  * AudioPortal
@@ -210,12 +304,12 @@ function ChapterRow({ chapter }) {
   return (
     <section
       id={chapter.id}
-      className="grid grid-cols-1 md:grid-cols-[340px_1fr] gap-8 py-12 border-b border-[#3A342B]/30 scroll-mt-24"
+      className="grid grid-cols-1 md:grid-cols-[280px_280px_1fr] gap-8 py-12 border-b border-[#3A342B]/30 scroll-mt-24"
     >
       <img
         src={chapter.image}
         alt={chapter.title}
-        className="w-full md:w-[340px] h-auto object-contain rounded-sm self-start"
+        className="w-full md:w-[280px] h-auto object-contain rounded-sm self-start"
       />
       <div>
         <h3
@@ -224,13 +318,13 @@ function ChapterRow({ chapter }) {
         >
           {chapter.title}
         </h3>
-        <p className="text-[#F5F1E8]/60 text-sm mb-4">{chapter.subtitle}</p>
-        <audio controls src={chapter.audio} className="w-full max-w-[340px] mb-3" />
-        <p className="text-[#F5F1E8]/40 text-xs tracking-wide mb-5">{chapter.pages}</p>
-        <p className="text-[#F5F1E8]/75 text-[15px] leading-relaxed whitespace-pre-line">
-          {chapter.text}
-        </p>
+        <p className="text-[#F5F1E8]/60 text-sm mb-5">{chapter.subtitle}</p>
+        <AudioPlayer src={chapter.audio} />
+        <p className="text-[#F5F1E8]/40 text-xs tracking-wide mt-4">{chapter.pages}</p>
       </div>
+      <p className="text-[#F5F1E8]/75 text-[15px] leading-relaxed whitespace-pre-line">
+        {chapter.text}
+      </p>
     </section>
   );
 }
@@ -264,15 +358,14 @@ export default function AudioPortal() {
           <img
             src="/audio-portal/images/overture-cover.png"
             alt="Journey — The Overture"
-            className="w-20 h-20 object-cover rounded"
+            className="w-20 h-20 object-cover rounded shrink-0"
           />
           <div className="flex-1">
             <p className="text-xs tracking-wide text-black/50">Yang Studio</p>
-            <p className="font-medium mb-2">Journey — The Overture</p>
-            <audio
-              controls
+            <p className="font-medium mb-3">Journey — The Overture</p>
+            <AudioPlayer
               src="/audio-portal/mp3/01 - Yang Studio_Journey_Overture .mp3"
-              className="w-full"
+              dark={false}
             />
           </div>
         </div>
@@ -280,10 +373,15 @@ export default function AudioPortal() {
         {/* Listen on */}
         <div className="text-center mb-16">
           <h2
-            className="text-3xl mb-6"
-            style={{ fontFamily: "Fraunces, serif", fontWeight: 500 }}
+            className="text-3xl mb-6 font-bold tracking-wide"
+            style={{
+              fontFamily: "Fraunces, serif",
+              backgroundImage: "linear-gradient(90deg, #1F3A93, #4A90D9)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
           >
-            Listen on
+            LISTEN ON
           </h2>
           <div className="flex flex-wrap justify-center gap-4">
             {LISTEN_ON.map((l) => (
